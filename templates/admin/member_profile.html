@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0">Member Profile: {{ member.fullname }}</h4>
+        </div>
+        
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <p><strong>Member ID:</strong> {{ member.id }}</p>
+              <p><strong>Email:</strong> {{ member.email }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Total Contributions:</strong> KSh {{ total_contributions|floatformat:2 }}</p>
+              <p><strong>Registration Date:</strong> {{ member.registrationdate|date }}</p>
+            </div>
+          </div>
+          
+          <h5 class="border-bottom pb-2">Recent Contributions</h5>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for contrib in contributions %}
+                  <tr>
+                    <td>{{ contrib.contributiondate|date }}</td>
+                    <td>KSh {{ contrib.amount|floatformat:2 }}</td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="2" class="text-center">No contributions found</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="card-footer text-center">
+          <a href="{% url 'member_search' %}" class="btn btn-secondary me-2">Back to Search</a>
+          <a href="{% url 'citizen_login' %}" class="btn btn-primary">Member Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Add Dependent</h4>
+        </div>
+        
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              {{ form.dependentname }}
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Date of Birth</label>
+              {{ form.dateofbirth }}
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Relationship</label>
+              {{ form.relationship }}
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">Save Dependent</button>
+              <a href="{% url 'citizen_dashboard' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

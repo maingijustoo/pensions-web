@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="search-container">
+  <h2>Find Your Pension Profile</h2>
+  
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+  
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label>Search By:</label>
+      <select name="search_type" class="form-control">
+        <option value="id">Member ID</option>
+        <option value="nssf">NSSF Card Number</option>
+        <option value="kra">KRA PIN</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <input type="text" name="search_term" class="form-control" 
+             placeholder="Enter your details" required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+  
+  <div class="login-prompt">
+    <p>Members: <a href="{% url 'login' %}">Login</a> to access full features</p>
+  </div>
+</div>
+{% endblock %}

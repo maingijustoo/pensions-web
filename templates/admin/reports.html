@@ -1,0 +1,343 @@
+{% extends "admin/base_site.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1 class="dashboard-title">Pension Fund Reports</h1>
+    
+    <!-- Date Navigation -->
+    <div class="report-period-nav mb-4">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary active" data-period="all">All Time</button>
+            <button type="button" class="btn btn-outline-primary" data-period="month">Last 30 Days</button>
+            <button type="button" class="btn btn-outline-primary" data-period="week">Last 7 Days</button>
+        </div>
+        <div class="float-end">
+            <small class="text-muted">Report generated: {{ today|date:"F j, Y" }}</small>
+        </div>
+    </div>
+    
+    <!-- Summary Cards -->
+    <div class="card-row">
+        <div class="summary-card bg-primary">
+            <div class="card-icon">
+                <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <div class="card-content">
+                <h3>Contributions</h3>
+                <h2>${{ reports.contributions.total_amount|floatformat:2|intcomma }}</h2>
+                <p>{{ reports.contributions.total|intcomma }} transactions</p>
+            </div>
+        </div>
+
+        <div class="summary-card bg-success">
+            <div class="card-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="card-content">
+                <h3>Payments</h3>
+                <h2>${{ reports.payments.total_amount|floatformat:2|intcomma }}</h2>
+                <p>{{ reports.payments.total|intcomma }} disbursements</p>
+            </div>
+        </div>
+
+        <div class="summary-card bg-info">
+            <div class="card-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="card-content">
+                <h3>Members</h3>
+                <h2>{{ reports.members.total|intcomma }}</h2>
+                <p>{{ reports.members.employed|intcomma }} employed</p>
+            </div>
+        </div>
+
+        <div class="summary-card bg-warning">
+            <div class="card-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="card-content">
+                <h3>Employers</h3>
+                <h2>{{ reports.employers.total|intcomma }}</h2>
+                <p>{{ reports.employers.active|intcomma }} active</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Reports -->
+    <div class="report-sections">
+        <!-- Contributions Report -->
+        <div class="report-section card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Contributions Report</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Summary</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th class="text-end">Count</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Last 7 Days</td>
+                                    <td class="text-end">{{ reports.contributions.week|intcomma }}</td>
+                                    <td class="text-end">${{ reports.contributions.week_amount|floatformat:2|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Last 30 Days</td>
+                                    <td class="text-end">{{ reports.contributions.month|intcomma }}</td>
+                                    <td class="text-end">${{ reports.contributions.month_amount|floatformat:2|intcomma }}</td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td>All Time</td>
+                                    <td class="text-end">{{ reports.contributions.total|intcomma }}</td>
+                                    <td class="text-end">${{ reports.contributions.total_amount|floatformat:2|intcomma }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Top Contributors</h4>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Member</th>
+                                        <th class="text-end">Amount</th>
+                                        <th class="text-end">Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contributor in top_lists.top_contributors %}
+                                    <tr>
+                                        <td>{{ contributor.memberid__fullname|default:"Unknown" }}</td>
+                                        <td class="text-end">${{ contributor.total|floatformat:2|intcomma }}</td>
+                                        <td class="text-end">{{ contributor.count|intcomma }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payments Report -->
+        <div class="report-section card mb-4">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Payments Report</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Summary</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th class="text-end">Count</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Last 7 Days</td>
+                                    <td class="text-end">{{ reports.payments.week|intcomma }}</td>
+                                    <td class="text-end">${{ reports.payments.week_amount|floatformat:2|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Last 30 Days</td>
+                                    <td class="text-end">{{ reports.payments.month|intcomma }}</td>
+                                    <td class="text-end">${{ reports.payments.month_amount|floatformat:2|intcomma }}</td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td>All Time</td>
+                                    <td class="text-end">{{ reports.payments.total|intcomma }}</td>
+                                    <td class="text-end">${{ reports.payments.total_amount|floatformat:2|intcomma }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Recent Payments</h4>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Member</th>
+                                        <th class="text-end">Amount</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in top_lists.recent_payments %}
+                                    <tr>
+                                        <td>{{ payment.paymentdate|date:"Y-m-d" }}</td>
+                                        <td>{{ payment.memberid.fullname }}</td>
+                                        <td class="text-end">${{ payment.amount|floatformat:2|intcomma }}</td>
+                                        <td>{{ payment.paymenttype }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Members Report -->
+        <div class="report-section card mb-4">
+            <div class="card-header bg-info text-white">
+                <h3 class="mb-0">Members Report</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Summary</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th class="text-end">New Members</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Last 7 Days</td>
+                                    <td class="text-end">{{ reports.members.week|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Last 30 Days</td>
+                                    <td class="text-end">{{ reports.members.month|intcomma }}</td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td>All Time</td>
+                                    <td class="text-end">{{ reports.members.total|intcomma }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h4 class="mt-4">Employment Status</h4>
+                        <div class="chart-container" style="height: 200px;">
+                            <canvas id="employmentChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Top Employers by Contributions</h4>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Employer</th>
+                                        <th class="text-end">Amount</th>
+                                        <th class="text-end">Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for employer in top_lists.top_employers %}
+                                    <tr>
+                                        <td>{{ employer.employerid__employername|default:"Unknown" }}</td>
+                                        <td class="text-end">${{ employer.total|floatformat:2|intcomma }}</td>
+                                        <td class="text-end">{{ employer.count|intcomma }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Export Options -->
+    <div class="card mt-4">
+        <div class="card-header bg-secondary text-white">
+            <h3 class="mb-0">Export Reports</h3>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'export_contributions_csv' %}" class="btn btn-primary me-2">
+                <i class="fas fa-file-export me-1"></i> Export Contributions
+            </a>
+            <button class="btn btn-success me-2">
+                <i class="fas fa-file-export me-1"></i> Export Payments
+            </button>
+            <button class="btn btn-info">
+                <i class="fas fa-file-export me-1"></i> Export Members
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Employment Status Chart
+    const employmentCtx = document.getElementById('employmentChart').getContext('2d');
+    new Chart(employmentCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Employed', 'Self-Employed', 'Unemployed'],
+            datasets: [{
+                data: [
+                    {{ reports.members.employed }},
+                    {{ reports.members.self_employed }},
+                    {{ reports.members.unemployed }}
+                ],
+                backgroundColor: ['#36b9cc', '#1cc88a', '#e74a3b'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+    
+    // Period filter functionality
+    document.querySelectorAll('.report-period-nav button').forEach(button => {
+        button.addEventListener('click', function() {
+            // This would be enhanced with AJAX in a real implementation
+            document.querySelector('.report-period-nav button.active').classList.remove('active');
+            this.classList.add('active');
+            // Here you would typically reload data via AJAX
+            // For this example, we'll just show a message
+            console.log(`Filtering for ${this.dataset.period} period`);
+        });
+    });
+</script>
+
+<style>
+    .report-period-nav {
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .report-section .card-header {
+        font-weight: 600;
+    }
+    
+    .report-section h4 {
+        font-size: 1.1rem;
+        color: #4e73df;
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock %}
